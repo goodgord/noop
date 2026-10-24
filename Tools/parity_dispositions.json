@@ -300,6 +300,14 @@
       "platform": "kotlin",
       "rationale": "Swift Repository.refresh reads the same imported daily union (unionDailyMetrics) in the excluded app layer and hands it, still apart from the computed union, to ChargeBaselines.resolve (#2525); this disposition does not assert behavioral parity.",
       "twin_path": "Strand/Data/Repository.swift"
+    },
+    {
+      "type": "platform_specific",
+      "kind": "add-unpaired-function",
+      "identity": "swift\u0000Packages/StrandAnalytics/Sources/StrandAnalytics/HRZones.swift::percentsJSON/2#1",
+      "identity_sha256": "bda417b0276efab03cfcfec11b3330d5ab7c6873ab46a6aec9072007f50a8e52",
+      "platform": "swift",
+      "rationale": "Used only by the iOS HealthKitBridge workout import, which reads the heart rate Apple Health links to each workout. The Android Health Connect import does not read workout heart rate, so Android has no caller; it only reads zonesJSON, which it already parses."
     }
   ]
 }
