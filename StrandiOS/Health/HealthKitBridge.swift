@@ -1718,6 +1718,13 @@ final class HealthKitBridge: ObservableObject {
                 let mean = Int((Double(samples.reduce(0) { $0 + $1.bpm }) / Double(samples.count)).rounded())
                 return (mean, samples.map(\.bpm).max() ?? mean)
             }()
+            // The zone split answers from the same stream as Effort and sits behind the same coverage
+            // gate, because it integrates time in zones too. It is stored, not only shown, so the day's
+            // zone time is readable from the database when the strap was off for the session.
+            let zonesJSON: String? = {
+                guard effort != nil, let profile else { return nil }
+                return HRZones.percentsJSON(samples, zoneSet: profile.zoneSet)
+            }()
             rows.append(WorkoutRow(
                 startTs: startTs, endTs: endTs,
                 sport: Self.sportName(workout.workoutActivityType),
@@ -1726,7 +1733,7 @@ final class HealthKitBridge: ObservableObject {
                 energyKcal: workout.totalEnergyBurned?.doubleValue(for: .kilocalorie()),
                 avgHr: heartRate?.avg, maxHr: heartRate?.peak, strain: effort,
                 distanceM: workout.totalDistance?.doubleValue(for: .meter()),
-                zonesJSON: nil, notes: nil, steps: steps))
+                zonesJSON: zonesJSON, notes: nil, steps: steps))
         }
         return rows
     }

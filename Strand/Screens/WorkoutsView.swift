@@ -1132,7 +1132,8 @@ struct WorkoutsView: View {
     private func zonesSection(_ z: WorkoutZones.Summary, totalSessions: Int) -> some View {
         VStack(alignment: .leading, spacing: NoopMetrics.gap) {
             SectionHeader("HR Zones",
-                          overline: "Whoop import",
+                          overline: z.appleHealthSessions == 0 ? "Whoop import"
+                              : z.appleHealthSessions == z.sessionsWithZones ? "Apple Health" : "Imported",
                           trailing: totalSessions == 1
                               ? String(localized: "\(z.sessionsWithZones) of 1 session")
                               : String(localized: "\(z.sessionsWithZones) of \(totalSessions) sessions"))

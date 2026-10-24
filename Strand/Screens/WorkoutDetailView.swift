@@ -50,8 +50,11 @@ struct WorkoutDetailView: View {
     /// Per-zone MINUTES for the zones bar: imported zones (duration-weighted) when present, else the
     /// window's raw HR samples binned into age-derived %HRmax zones. nil = no zone split to show.
     @State private var zoneMinutes: [Double]? = nil
-    /// True when the zones bar came from imported WHOOP percentages (vs derived from raw strap HR).
+    /// True when the zones bar came from the row's stored percentages (vs derived from raw strap HR).
     @State private var zonesFromImport = false
+    /// True when those stored percentages belong to an Apple Health workout, whose split NOOP worked out
+    /// from the workout's own HealthKit heart rate on import. Every other stored split is WHOOP's.
+    @State private var zonesFromAppleHealth = false
     @State private var loaded = false
     /// #516: computed from the recorded workout-end + post-workout HR window. nil when the workout was
     /// not intense enough or the strap did not record enough post-workout coverage.
@@ -162,6 +165,7 @@ struct WorkoutDetailView: View {
             self.hrPoints = points
             self.zoneMinutes = minutes
             self.zonesFromImport = fromImport
+            self.zonesFromAppleHealth = fromImport && WorkoutSource.isAppleHealth(row.source)
             self.heartRateRecovery = hrr
             self.steps = stepReadout
             self.loaded = true
@@ -468,7 +472,8 @@ struct WorkoutDetailView: View {
             let busiest = z.indices.max(by: { z[$0] < z[$1] }) ?? 0
             VStack(alignment: .leading, spacing: NoopMetrics.gap) {
                 SectionHeader("HR Zones",
-                              overline: zonesFromImport ? "Whoop import" : "From strap HR",
+                              overline: zonesFromImport ? (zonesFromAppleHealth ? "Apple Health" : "Whoop import")
+                                                        : "From strap HR",
                               trailing: String(localized: "\(Int(total.rounded()))m in zone"))
                 NoopCard(tint: StrandPalette.effortColor) {
                     VStack(alignment: .leading, spacing: 12) {
@@ -498,7 +503,9 @@ struct WorkoutDetailView: View {
                             }
                         }
                         Text(zonesFromImport
-                             ? "WHOOP's imported per-zone split for this session."
+                             ? (zonesFromAppleHealth
+                                ? "Time in each %HRmax zone, from the heart rate Apple Health recorded for this workout (approximate)."
+                                : "WHOOP's imported per-zone split for this session.")
                              : "Time in each %HRmax zone, derived from the strap's heart rate over this window (approximate).")
                             .font(StrandFont.footnote)
                             .foregroundStyle(StrandPalette.textTertiary)

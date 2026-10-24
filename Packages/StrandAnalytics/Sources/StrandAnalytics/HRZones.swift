@@ -210,6 +210,24 @@ public enum HRZones {
         return TimeInZone(seconds: zoneSeconds, belowZone1: below)
     }
 
+    /// A workout's zone split as stored in `workout.zonesJSON`: `{"z1":…,"z5":…}`, each the percentage
+    /// (0–100, one decimal place) of the measured time spent in that zone. Time below zone 1 counts in
+    /// the measured time but has no key, so the five values can sum to less than 100. This is the shape
+    /// the WHOOP import writes and `WorkoutZones.percents` reads, and readers turn it into minutes as
+    /// duration × percentage ÷ 100.
+    ///
+    /// Keys are written in a fixed order and the numbers are formatted without a locale, so the same
+    /// samples always give the same string. nil when there are no samples, or no time in any zone.
+    public static func percentsJSON(_ hr: [HRSample], zoneSet: HRZoneSet) -> String? {
+        let tiz = timeInZone(hr, zoneSet: zoneSet)
+        let measured = tiz.total
+        guard measured > 0, tiz.seconds.contains(where: { $0 > 0 }) else { return nil }
+        let parts = tiz.seconds.enumerated().map { i, s in
+            "\"z\(i + 1)\":" + String(format: "%.1f", s / measured * 100)
+        }
+        return "{" + parts.joined(separator: ",") + "}"
+    }
+
     /// Median spacing between consecutive timestamps, restricted to plausible
     /// (0, 300 s] gaps. Falls back to 1.0 s when no plausible gap exists.
     static func medianInterval(_ sorted: [HRSample]) -> Double {

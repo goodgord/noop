@@ -169258,6 +169258,64 @@
         }
       }
     },
+    "Time in each %HRmax zone, from the heart rate Apple Health recorded for this workout (approximate).": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeit in jeder %HRmax-Zone, aus der Herzfrequenz, die Apple Health für dieses Training aufgezeichnet hat (ungefähr)."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiempo en cada zona de %HRmax, a partir de la frecuencia cardíaca que Apple Health registró en este entrenamiento (aproximado)."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temps dans chaque zone de %HRmax, d'après la fréquence cardiaque enregistrée par Apple Health pour cet entraînement (approximatif)."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tempo in ciascuna zona %HRmax, dalla frequenza cardiaca registrata da Apple Health per questo allenamento, approssimativo."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tempo em cada zona %HRmax, a partir da frequência cardíaca que o Apple Health registou neste treino (aproximado)."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Время в каждой зоне %HRmax по пульсу, который Apple Health записал за эту тренировку (приблизительно)."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在每个 %HRmax 区间的时间，根据 Apple Health 为此次训练记录的心率得出，近似值。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在每個 %HRmax 區間的時間，根據 Apple Health 為此次訓練記錄的心率得出，近似值。"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Czas w każdej strefie %HRmax, na podstawie tętna zapisanego przez Apple Health dla tego treningu (w przybliżeniu)."
+          }
+        }
+      }
+    },
     "Time of day": {
       "localizations": {
         "de": {

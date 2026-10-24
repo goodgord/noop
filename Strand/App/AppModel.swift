@@ -273,12 +273,14 @@ final class AppModel: ObservableObject {
         // Seed it now and keep it in step with any profile edit (objectWillChange fires just before a
         // @Published setter lands, so read the CURRENT values , they're already committed by the time the
         // next reconcile reads `strainProfile`). Display-only; the score itself is unchanged.
-        self.repo.strainProfile = Repository.StrainProfile(hrMax: Double(profile.hrMax), sex: profile.sex)
+        self.repo.strainProfile = Repository.StrainProfile(hrMax: Double(profile.hrMax), sex: profile.sex,
+                                                           zoneLowerBounds: profile.customHRZoneLowerBounds)
         profile.objectWillChange.sink { [weak self] in
             guard let self else { return }
             DispatchQueue.main.async {
                 self.repo.strainProfile = Repository.StrainProfile(
-                    hrMax: Double(self.profile.hrMax), sex: self.profile.sex)
+                    hrMax: Double(self.profile.hrMax), sex: self.profile.sex,
+                    zoneLowerBounds: self.profile.customHRZoneLowerBounds)
             }
         }.store(in: &hrCancellables)
         // Smooth HR centrally so it's solid everywhere it's shown.

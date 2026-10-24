@@ -232,7 +232,14 @@ final class Repository: ObservableObject {
     /// instant the strap trace covers the window, recomputed from the SAME samples the graph/zones use, so
     /// per-workout Effort can never read blank while the day total counted it. Honest: only filled when the
     /// window is genuinely dense (the same minSamples gate the HR reconcile uses); never fabricated.
-    struct StrainProfile: Sendable { let hrMax: Double; let sex: String }
+    struct StrainProfile: Sendable {
+        let hrMax: Double
+        let sex: String
+        /// The wearer's custom zone floors in bpm, or nil for the %HRmax defaults (`Profile.customHRZoneLowerBounds`).
+        var zoneLowerBounds: [Double]? = nil
+        /// The same display-zone model as `Profile.hrZoneSet`, so a stored split matches the workout screen.
+        var zoneSet: HRZoneSet { HRZones.zones(maxHR: hrMax, customLowerBounds: zoneLowerBounds) }
+    }
     var strainProfile: StrainProfile?
 
     /// Emit one Workouts & GPS test-mode line iff the mode is on and a sink is wired. The cheap

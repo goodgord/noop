@@ -125,4 +125,33 @@ final class HRZonesTests: XCTestCase {
                           "a huge inter-sample gap must be capped at the median, not credited in full")
         XCTAssertEqual(tiz.seconds(inZone: 1), tiz.total, accuracy: 1e-9)  // all of it is zone 1
     }
+
+    // MARK: - percentsJSON (the stored `workout.zonesJSON` shape)
+
+    /// Percentages are of the MEASURED time, including time below zone 1, so the five can sum to under
+    /// 100. Keys are in a fixed order and the numbers have one decimal place.
+    func testPercentsJSONIsAShareOfMeasuredTime() {
+        let zs = HRZones.zones(maxHR: 200)          // zone floors 100, 120, 140, 160, 180
+        var hr: [HRSample] = []
+        for (i, bpm) in [90, 130, 165, 185].enumerated() {
+            hr += (0..<10).map { HRSample(ts: i * 50 + $0 * 5, bpm: bpm) }
+        }
+        XCTAssertEqual(HRZones.percentsJSON(hr, zoneSet: zs),
+                       #"{"z1":0.0,"z2":25.0,"z3":0.0,"z4":25.0,"z5":25.0}"#)
+    }
+
+    /// No samples, or no time in any zone, gives nil so a reader falls back instead of showing a split.
+    func testPercentsJSONIsNilWithoutZoneTime() {
+        let zs = HRZones.zones(maxHR: 200)
+        XCTAssertNil(HRZones.percentsJSON([], zoneSet: zs))
+        XCTAssertNil(HRZones.percentsJSON((0..<20).map { HRSample(ts: $0, bpm: 80) }, zoneSet: zs))
+    }
+
+    /// Custom zone floors are used when set, as on the workout screen.
+    func testPercentsJSONUsesCustomZoneFloors() {
+        let zs = HRZones.zones(maxHR: 200, customLowerBounds: [90, 100, 110, 120, 130])
+        let hr = (0..<10).map { HRSample(ts: $0, bpm: 125) }
+        XCTAssertEqual(HRZones.percentsJSON(hr, zoneSet: zs),
+                       #"{"z1":0.0,"z2":0.0,"z3":0.0,"z4":100.0,"z5":0.0}"#)
+    }
 }

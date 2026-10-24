@@ -29,20 +29,25 @@ enum WorkoutZones {
     struct Summary {
         let minutes: [Double]          // index 0 = Z1 … 4 = Z5
         let sessionsWithZones: Int
+        /// How many of `sessionsWithZones` are Apple Health workouts, whose split NOOP worked out from the
+        /// workout's HealthKit heart rate on import. The rest are WHOOP's own splits.
+        var appleHealthSessions: Int = 0
         var totalMinutes: Double { minutes.reduce(0, +) }
     }
 
     static func summary(from rows: [WorkoutRow]) -> Summary? {
         var mins = [Double](repeating: 0, count: 5)
         var n = 0
+        var apple = 0
         for r in rows {
             guard let p = percents(r.zonesJSON) else { continue }
             let durMin = (r.durationS ?? Double(r.endTs - r.startTs)) / 60.0
             guard durMin > 0 else { continue }
             for i in 0..<5 { mins[i] += durMin * p[i] / 100.0 }
             n += 1
+            if WorkoutSource.isAppleHealth(r.source) { apple += 1 }
         }
         guard n > 0, mins.reduce(0, +) > 0 else { return nil }
-        return Summary(minutes: mins, sessionsWithZones: n)
+        return Summary(minutes: mins, sessionsWithZones: n, appleHealthSessions: apple)
     }
 }
